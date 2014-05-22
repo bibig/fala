@@ -1,11 +1,11 @@
 module.exports = create;
 
 var yi     = require('yi');
-var Upload = require('./libs/upload');
+var Fala = require('./libs/fala');
 var config = require('./config');
 
 function create (settings) {
-  var upload;
+  var fala;
 
   yi.merge(config, settings);
 
@@ -15,22 +15,22 @@ function create (settings) {
 
     // console.log(req.files);
    
-    upload = Upload.create(config, req.files);
+    fala = Fala.create(config, req.files);
     
-    if (upload.validate()) {
-      upload.save(function (e) {
+    if (fala.validate()) {
+      fala.save(function (e) {
         
         if (e) {
           next(e);
         } else {
-          req.upload = {data: upload.data};
+          req.fala = {data: fala.data};
           next();
         }
       });
     } else { // failed validate
-      req.upload = {errors: yi.clone(upload.errors)};
-      upload.clear(next);
-    } // end of if (upload.validate())
+      req.fala = {errors: yi.clone(fala.errors)};
+      fala.clear(next);
+    } // end of if (fala.validate())
     
   };
 }

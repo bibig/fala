@@ -10,7 +10,7 @@ var gm      = require('gm').subClass({ imageMagick: true });
 var whether = require('whether').create();
 
 function create (config, files) {
-  return new Upload(config, files);
+  return new Fala(config, files);
 }
 
 function checkFilePath (path, callback) {
@@ -48,10 +48,10 @@ function getThumbPath (field) {
 }
 
 /////////////////////////
-// upload class define //
+// fala class define //
 /////////////////////////
 
-function Upload (config, files) {
+function Fala (config, files) {
   this.myna       = Myna(config.errors);
   this.files      = files || {};
   this.fields     = config.fields;
@@ -59,12 +59,12 @@ function Upload (config, files) {
   this.errors     = {};
 }
 
-Upload.prototype.forEachFile = function (callback) {
+Fala.prototype.forEachFile = function (callback) {
   yi.forEach(this.files, callback);
 };
 
 // waterfall steps:  validate -> save -> crop -> thumb
-Upload.prototype.validate = function () {
+Fala.prototype.validate = function () {
   var self = this;
 
   this.forEachFile(function (name) {
@@ -74,7 +74,7 @@ Upload.prototype.validate = function () {
   return Object.keys(this.errors).length === 0;
 };
 
-Upload.prototype.clear = function (callback) {
+Fala.prototype.clear = function (callback) {
   var self = this;
   // console.log(files);
 
@@ -87,7 +87,7 @@ Upload.prototype.clear = function (callback) {
 };
 
 // should be used after validate()
-Upload.prototype.save = function (callback) {
+Fala.prototype.save = function (callback) {
   var self = this;
   var filenames = Object.keys(this.files);
   
@@ -123,7 +123,7 @@ Upload.prototype.save = function (callback) {
   }, callback); // end of async.each
 };
 
-Upload.prototype.moveImage = function (name, callback) {
+Fala.prototype.moveImage = function (name, callback) {
   var file           = this.files[name];
   var field          = this.fields[name];
   var targetFileName = toRandomFile(file.path);
@@ -146,7 +146,7 @@ Upload.prototype.moveImage = function (name, callback) {
   });
 };
 
-Upload.prototype.trimImage = function (name, callback) {
+Fala.prototype.trimImage = function (name, callback) {
   var field       = this.fields[name];
   var targetImage = path.join(field.path, this.data[name]);
   var imageSize   = field.imageSize;
@@ -185,7 +185,7 @@ Upload.prototype.trimImage = function (name, callback) {
   }
 };
 
-Upload.prototype.thumbImage = function (name, callback) {
+Fala.prototype.thumbImage = function (name, callback) {
   var field          = this.fields[name];
   var thumbPath      = getThumbPath(field);
   var source = path.join(field.path, this.data[name]);
@@ -198,7 +198,7 @@ Upload.prototype.thumbImage = function (name, callback) {
   });
 };
 
-Upload.prototype.thumbImages = function (name, callback) {
+Fala.prototype.thumbImages = function (name, callback) {
   var field          = this.fields[name];
   var thumbPath      = getThumbPath(field);
   var source = path.join(field.path, this.data[name]);
@@ -217,7 +217,7 @@ Upload.prototype.thumbImages = function (name, callback) {
   });
 };
 
-Upload.prototype.checkFile = function (name) {
+Fala.prototype.checkFile = function (name) {
   var field = this.fields[name];
   var file, ext;
 

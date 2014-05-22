@@ -10,7 +10,7 @@ var glory = require('glory')({
 });
 var imagePath = path.join(__dirname, './public/uploads');
 
-var upload = require('../../index')({
+var fala = require('../../index')({
   fields: {
     image: {
       required: true,
@@ -62,9 +62,9 @@ glory.getThumbPath = function (file, size) {
 };
 
 
-glory.app.all('/upload', upload, function (req, res, next) {
+glory.app.all('/upload', fala, function (req, res, next) {
   
-  res.json(req.upload);
+  res.json(req.fala);
 
 });
 
