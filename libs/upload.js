@@ -62,8 +62,8 @@ function Upload (config, files) {
 Upload.prototype.forEachFile = function (callback) {
   yi.forEach(this.files, callback);
 };
-// waterfall steps:  validate -> save -> crop -> thumb
 
+// waterfall steps:  validate -> save -> crop -> thumb
 Upload.prototype.validate = function () {
   var self = this;
 
@@ -107,7 +107,16 @@ Upload.prototype.save = function (callback) {
         self.trimImage(name, callback);
       },
       function (callback) {
-        self.thumbImage(name, callback);
+        var field = self.fields[name];
+
+        if (field.thumbs) {
+          self.thumbImages(name, callback);
+        } else if (field.thumbSize) {
+          self.thumbImage(name, callback);
+        } else {
+          callback();
+        }
+        
       }
     ], callback); // end of async.series
       
@@ -177,41 +186,37 @@ Upload.prototype.trimImage = function (name, callback) {
 };
 
 Upload.prototype.thumbImage = function (name, callback) {
-  var field = this.fields[name];
-  var targetImage, thumbPath, thumbImageObj, thumbSize;
+  var field          = this.fields[name];
+  var thumbPath      = getThumbPath(field);
+  var source = path.join(field.path, this.data[name]);
+  var thumb  = path.join(thumbPath, this.data[name]);
   
-  if (field.hasThumb) {
-    targetImage   = path.join(field.path, this.data[name]);
-    thumbPath     = getThumbPath(field);
-    thumbImageObj = path.join(thumbPath, this.data[name]);
-    thumbSize     = field.thumbSize;
-   
-    if (typeof thumbSize == 'number') {
-      thumbSize = [thumbSize];
+  checkFilePath(thumbPath, function (e) {
+    if (e) { callback(e); } else {
+      makeThumb(source, thumb, field.thumbSize, callback);
     }
-  
-    if (Array.isArray(thumbSize)) {
-      checkFilePath(thumbPath, function (e) {
-
-        if (e) {
-          callback(e);
-        } else {
-          gm(targetImage)
-          .resize(thumbSize[0], thumbSize[1])
-          .write(thumbImageObj, callback);  
-        }
-
-      });
-    } else {
-      callback();
-    }
-  } else {
-    callback();
-  }
+  });
 };
 
+Upload.prototype.thumbImages = function (name, callback) {
+  var field          = this.fields[name];
+  var thumbPath      = getThumbPath(field);
+  var source = path.join(field.path, this.data[name]);
+  var info           = this.data[name].split('.');
+  
+  checkFilePath(thumbPath, function (e) {
+    if (e) { callback(e); } else {
 
-//@isEditAction: 修改记录时，应该允许不上传文件，因为有可能只是修改其它字段
+      async.eachSeries(field.thumbs, function (thumbSize, callback) {
+        var thumb = path.join(thumbPath, info[0] + '_' + thumbSize + '.' + info[1]);
+
+        makeThumb(source, thumb, thumbSize, callback);
+      }, callback);
+      
+    }
+  });
+};
+
 Upload.prototype.checkFile = function (name) {
   var field = this.fields[name];
   var file, ext;
@@ -230,7 +235,7 @@ Upload.prototype.checkFile = function (name) {
     return;
   }
 
-  if (file.size == 0 ) {
+  if (file.size === 0 ) {
 
     if (field.required || field.isRequired) {
       this.errors[name] = this.myna.message(106);
@@ -270,3 +275,14 @@ Upload.prototype.checkFile = function (name) {
     return;
   }
 };
+
+function makeThumb (targetImage, thumbImage, size, callback) {
+
+  if ( ! Array.isArray(size)) {
+    size = (size + '').split('x');
+  }
+
+  gm(targetImage)
+    .resize(size[0], size[1])
+    .write(thumbImage, callback);
+}

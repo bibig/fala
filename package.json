@@ -1,6 +1,6 @@
 {
   "name": "fala",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "an upload middleware for express app, upload images and make thumbs",
   "main": "index.js",
   "scripts": {
