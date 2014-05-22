@@ -10,9 +10,9 @@ var uploadTmpPath = path.join(__dirname, '../tmp');
 function clear (path, done) {
   var command = 'rm -rf ' + path;
 
-  //exec(command, function(err, stdout, stderr) {
+  exec(command, function(err, stdout, stderr) {
     done();
-  //});
+  });
 }
 
 describe('basic test', function  () {
