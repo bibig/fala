@@ -12,8 +12,6 @@ function create (settings) {
   return function (req, res, next) {
 
     if (req.method == 'GET') { return next(); }
-
-    // console.log(req.files);
    
     fala = Fala.create(config, req.files);
     

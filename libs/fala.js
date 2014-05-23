@@ -76,22 +76,46 @@ Fala.prototype.validate = function () {
 
 Fala.prototype.clear = function (callback) {
   var self = this;
-  // console.log(files);
 
   async.each(Object.keys(this.files || {}), function(name, next) {
     var file = self.files[name];
-    // console.log('ready to delete: %s', file.path);
+    
     fs.unlink(file.path, next);
   }, callback);
 
 };
 
-// should be used after validate()
+Fala.prototype.getValidFiles = function () {
+    var valids = [];
+
+    this.forEachFile(function (name, file) {
+      if (file.originalFilename === '' || file.size === 0) { return; }
+
+      valids.push(name);
+    });
+
+    return valids;
+};
+
+
+/**
+ * save all uploaded files
+ *
+ * should be used after validate()
+ * and should use valided files.
+ * when no file choosed to upload, express will also create an empty tmp file for it.
+ *  use this empty tmp file, gm will emit ENOENT error.
+
+ * @author bibig@me.com
+ * @update [date]
+ * @param  {Function} callback [description]
+ * @return {[type]}            [description]
+ */
 Fala.prototype.save = function (callback) {
   var self = this;
-  var filenames = Object.keys(this.files);
   
-  // console.log(filenames);
+  var filenames = this.getValidFiles(); 
+  
   async.each(filenames, function(name, callback) {
     
     async.series([
@@ -228,7 +252,6 @@ Fala.prototype.checkFile = function (name) {
   file = this.files[name];
 
   if (file.originalFilename === '') {
-
     if (field.required || field.isRequired) {
       this.errors[name] = this.myna.message(100);
     }
@@ -236,7 +259,6 @@ Fala.prototype.checkFile = function (name) {
   }
 
   if (file.size === 0 ) {
-
     if (field.required || field.isRequired) {
       this.errors[name] = this.myna.message(106);
     }
