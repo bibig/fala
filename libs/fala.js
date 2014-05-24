@@ -32,14 +32,9 @@ function checkFilePath (path, callback) {
 
   });
 }
-
-function fileExt (filename) {
-  var info = filename.split('.');
-  return info[info.length - 1];
-}
   
 function toRandomFile (source) {
-  return [rander.string(6), fileExt(source)].join('.');
+  return rander.string(6) +  path.extname(source);
 }
 
 //@isEditAction: 修改记录时，应该允许不上传文件，因为有可能只是修改其它字段
@@ -270,15 +265,10 @@ Fala.prototype.checkFile = function (name) {
     return;
   }
 
-  ext = fileExt(file.path);
+  ext = path.extname(file.path).substring(1);
   
   if ((field.exts || []).indexOf(ext) == -1) {
     this.errors[name] = this.myna.message(102, ext);
-    return;
-  }
-  
-  if ( field.isImage && file.type.split('/')[0] != 'image') {
-    this.errors[name] = this.myna.message(101, file.originalFilename);
     return;
   }
 

@@ -66,7 +66,7 @@ describe('basic test', function  () {
         should.not.exist(e);
         // console.log(res.text);
         results = JSON.parse(res.text);
-        console.log(results);
+        // console.log(results);
         // console.log(typeof results);
 
         done();
@@ -83,7 +83,7 @@ describe('basic test', function  () {
     var thumbFile2_150x150 = glory.getThumbPath(image2, '150x150');
     var thumbFile2_80x80 = glory.getThumbPath(image2, '80x80');
 
-    console.log(thumbFile2_80x80);
+    // console.log(thumbFile2_80x80);
 
     fs.existsSync(imageFile).should.be.true;
     fs.existsSync(thumbFile).should.be.true;
