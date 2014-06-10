@@ -14,9 +14,10 @@ function create (config, files) {
 }
 
 function checkFilePath (path, callback) {
-  fs.exists(path, function (exists) {
 
-    if (!exists) {
+  fs.exists(path, function (exists) {
+    
+    if ( ! exists ) {
       fs.mkdir(path, function (e) {
     
         if (e) {
@@ -116,7 +117,7 @@ Fala.prototype.save = function (callback) {
     async.series([
       function (callback) {
         var field = self.fields[name];
-
+        
         checkFilePath(field.path, callback);
       },
       function (callback) {

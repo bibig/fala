@@ -2,12 +2,10 @@ module.exports = create;
 
 var yi     = require('yi');
 var Fala = require('./libs/fala');
-var config = require('./config');
 
 function create (settings) {
   var fala;
-
-  yi.merge(config, settings);
+  var config = require('./config')(settings);
 
   return function (req, res, next) {
 

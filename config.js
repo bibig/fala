@@ -1,5 +1,7 @@
-module.exports = {
-  fields: {},
+module.exports = create;
+
+var yi     = require('yi');
+var Config = {
   errors: {
     99  : '非法的上传文件, 缺失对<%s>的定义',
     100 : '请上传文件',
@@ -11,3 +13,7 @@ module.exports = {
     106 : '请上传非空文件'
   }
 };
+
+function  create (settings) {
+  return yi.merge(settings, yi.clone(Config));
+}
